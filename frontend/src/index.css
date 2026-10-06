@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colores de marca */
+  --color-brand: #f45bc4;
+  --color-brand-dark: #98146b;
+  --color-brand-hover: #7b1057;
+  --color-brand-soft: #fff0fa;
+
+  /* Detalles inspirados en el pelaje del logo */
+  --color-sand: #e8c99b;
+  --color-sand-soft: #faf4eb;
+
+  /* Fondos, textos y bordes */
+  --color-surface: #ffffff;
+  --color-ink: #30212d;
+  --color-muted: #6b5966;
+  --color-border: #eadce5;
+
+  /* Estados: acompañar siempre con texto o iconos */
+  --color-success: #166534;
+  --color-success-soft: #dcfce7;
+  --color-warning: #854d0e;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+  --color-info: #1e40af;
+  --color-info-soft: #dbeafe;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: var(--color-brand-soft);
+    color: var(--color-ink);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-brand-dark);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: var(--color-ink);
+  }
+}

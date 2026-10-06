@@ -1,0 +1,103 @@
+# ==========================================
+# DEPENDENCIAS
+# Se recuperan ejecutando npm install.
+# ==========================================
+node_modules/
+
+# ==========================================
+# ARCHIVOS GENERADOS AL COMPILAR
+# ==========================================
+dist/
+build/
+*.tsbuildinfo
+
+# ==========================================
+# VARIABLES DE ENTORNO Y CREDENCIALES
+# ==========================================
+.env
+.env.*
+
+# Las plantillas sí se guardan en Git.
+# Deben contener ejemplos, nunca claves reales.
+!.env.example
+!.env.sample
+
+# Certificados y claves privadas locales
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ==========================================
+# BASES DE DATOS SQLITE
+# Incluye archivos auxiliares.
+# ==========================================
+*.sqlite
+*.sqlite3
+*.db
+*.sqlite-*
+*.sqlite3-*
+*.db-*
+
+# Datos locales del backend
+/backend/data/
+
+# ==========================================
+# ARCHIVOS SUBIDOS POR LOS USUARIOS
+# Fotos de mascotas y otros archivos privados.
+# ==========================================
+/backend/uploads/
+/backend/private/
+
+# ==========================================
+# COPIAS DE SEGURIDAD LOCALES
+# ==========================================
+/backups/
+/backend/backups/
+
+# ==========================================
+# REGISTROS DE EJECUCIÓN Y ERRORES
+# ==========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# CACHÉS Y ARCHIVOS TEMPORALES
+# ==========================================
+.cache/
+.vite/
+.eslintcache
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# ==========================================
+# RESULTADOS DE PRUEBAS
+# ==========================================
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# ==========================================
+# CONFIGURACIÓN PERSONAL DE LOS EDITORES
+# ==========================================
+.vscode/
+.idea/
+*.suo
+*.user
+
+# ==========================================
+# ARCHIVOS GENERADOS POR WINDOWS Y MAC
+# ==========================================
+Thumbs.db
+Desktop.ini
+.DS_Store
+._*
