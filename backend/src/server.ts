@@ -1,12 +1,17 @@
 import { registerRouter } from "./routes/register.js";
 import "dotenv/config";
 import { existsSync } from "node:fs";
+import {
+  trackingLinksRouter,
+  publicTrackingRouter,
+} from "./routes/tracking-links.js";
 import { extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { activationRouter } from "./routes/activation.js";
 import { customersRouter } from "./routes/customers.js";
 import { adminAppointmentsRouter } from "./routes/admin-appointments.js";
 import { salesRouter } from "./routes/sales.js";
+import { metricsRouter } from "./routes/metrics.js";
 import { appointmentsRouter } from "./routes/appointments.js";
 import { trackingRouter } from "./routes/tracking.js";
 import { servicesRouter } from "./routes/services.js";
@@ -184,7 +189,23 @@ app.use("/api/pets", requireLogin, petsRouter);
 app.use("/api/services", requireLogin, servicesRouter);
 app.use("/api/appointments", requireLogin, appointmentsRouter);
 app.use("/api/tracking", requireLogin, trackingRouter);
+app.use(
+  "/api/tracking-links",
+  requireLogin,
+  trackingLinksRouter
+);
+
+app.use(
+  "/api/public-tracking",
+  publicTrackingRouter
+);
 app.use("/api/sales", requireLogin, salesRouter);
+app.use(
+  "/api/metrics",
+  requireLogin,
+  requireAdmin,
+  metricsRouter
+);
 app.use("/api/customers", requireLogin, customersRouter);
 app.use(
   "/api/admin-appointments",

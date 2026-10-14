@@ -85,7 +85,8 @@ registerRouter.post(
       ) {
         res.status(409).json({
           message:
-"No se puede registrar ese correo. Si ya tienes contraseña, inicia sesión. Si el negocio creó tu ficha sin acceso web, usa «Activar mi acceso» en la pantalla de inicio de sesión."        });
+            "No se puede registrar ese correo. Si ya tienes contraseña, inicia sesión. Si el negocio creó tu ficha sin acceso web, usa «Activar mi acceso» en la pantalla de inicio de sesión."
+        });
         return;
       }
 

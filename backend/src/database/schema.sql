@@ -309,3 +309,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_reception_slot
     'COMPLETED',
     'NO_SHOW'
   );
+  
+CREATE TABLE IF NOT EXISTS tracking_links (
+  appointment_id INTEGER PRIMARY KEY,
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at INTEGER NOT NULL,
+  FOREIGN KEY (appointment_id)
+    REFERENCES appointments(id)
+    ON DELETE CASCADE
+);

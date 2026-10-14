@@ -305,16 +305,28 @@ export default function Appointments({ isAdmin }: Props) {
     }
   }
 
-  async function changeStatus(
+    async function changeStatus(
     appointment: Appointment,
-    action: "confirm" | "cancel"
+    action: "confirm" | "cancel" | "no-show"
   ) {
-    const question =
-      action === "confirm"
-        ? `¿Confirmar la recepción de ${appointment.pet_name} el ${receptionLabel(appointment.starts_at)}?`
-        : `¿Cancelar la cita de ${appointment.pet_name}?`;
+    if (busy) return;
 
-    if (!window.confirm(question)) return;
+    const questions = {
+      confirm:
+        `¿Confirmar la recepción de ${appointment.pet_name} ` +
+        `el ${receptionLabel(appointment.starts_at)}?`,
+
+      cancel:
+        `¿Cancelar la cita de ${appointment.pet_name}?`,
+
+      "no-show":
+        `¿Confirmas que ${appointment.pet_name} no asistió a su cita ` +
+        `del ${receptionLabel(appointment.starts_at)}?\n\n` +
+        "Hazlo únicamente después de comprobar que no llegó. " +
+        "El cambio quedará registrado y contará en las métricas.",
+    };
+
+    if (!window.confirm(questions[action])) return;
 
     setBusy(true);
     setError("");
@@ -327,9 +339,21 @@ export default function Appointments({ isAdmin }: Props) {
       );
 
       setSuccess(result.message);
-      await reload();
+
+      try {
+        await reload();
+      } catch {
+        setError(
+          "El cambio se guardó, pero no se pudo actualizar la lista. " +
+          "Pulsa Actualizar citas."
+        );
+      }
     } catch (error) {
-      setError(error instanceof Error ? error.message : "No se pudo actualizar.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo comprobar el resultado. Actualiza las citas antes de reintentar."
+      );
     } finally {
       setBusy(false);
     }
@@ -688,10 +712,19 @@ export default function Appointments({ isAdmin }: Props) {
           const max = appointment.services.reduce(
             (total, service) => total + service.price_max_cents, 0
           );
-          const future = Date.parse(appointment.starts_at) > Date.now();
+                    const startsAt = Date.parse(appointment.starts_at);
+          const validDate = Number.isFinite(startsAt);
+          const future = validDate && startsAt > Date.now();
+
           const canCancel =
             ["PENDING", "CONFIRMED"].includes(appointment.status) &&
             (isAdmin || future);
+
+          const canMarkNoShow =
+            isAdmin &&
+            appointment.status === "CONFIRMED" &&
+            validDate &&
+            startsAt < Date.now();
 
           return (
             <article
@@ -736,6 +769,8 @@ export default function Appointments({ isAdmin }: Props) {
   <AppointmentTracking
     key={appointment.id}
     appointmentId={appointment.id}
+    petName={appointment.pet_name}
+    startsAt={appointment.starts_at}
     isAdmin={isAdmin}
     onUpdated={() => {
       void refresh();
@@ -765,7 +800,18 @@ export default function Appointments({ isAdmin }: Props) {
                     Confirmar recepción
                   </button>
                 )}
-
+                                {canMarkNoShow && (
+                  <button
+                    type="button"
+                    disabled={busy || loading}
+                    onClick={() =>
+                      void changeStatus(appointment, "no-show")
+                    }
+                    className="rounded-xl border border-danger px-4 py-2 font-semibold text-danger hover:bg-danger-soft disabled:opacity-60"
+                  >
+                    Marcar inasistencia
+                  </button>
+                )}
                 {canCancel && (
                   <button
                     type="button"

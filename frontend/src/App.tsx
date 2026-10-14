@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import PublicTracking from "./components/PublicTracking";
 import Customers from "./components/Customers";
 import Sales from "./components/Sales";
+import Metrics from "./components/Metrics";
 import {
   BrowserRouter,
   Link,
@@ -16,6 +18,7 @@ import {
 import {
   Users,
   Banknote,
+  ChartColumn,
   CalendarDays,
   ChevronLeft,
   Home,
@@ -31,7 +34,7 @@ import Register from "./components/Register";
 import MyPets from "./components/MyPets";
 import ServiceCatalog from "./components/ServiceCatalog";
 import Appointments from "./components/Appointments";
-
+import BookingAssistant from "./components/BookingAssistant";
 type User = {
   id: number;
   name: string;
@@ -217,6 +220,13 @@ function Application() {
       />
     );
   }
+    if (location.pathname === "/seguimiento") {
+    return (
+      <PublicTracking
+        key={location.pathname + location.hash}
+      />
+    );
+  }
 
   // PANTALLAS SIN SESIÓN
   if (!user) {
@@ -389,6 +399,11 @@ function Application() {
           label: "Mis mascotas",
           icon: PawPrint,
         },
+                {
+          path: "/asistente",
+          label: "Asistente de citas",
+          icon: CalendarDays,
+        },
       ]
     : []),
   {
@@ -413,6 +428,11 @@ function Application() {
         path: "/ventas",
         label: "Ventas y cobros",
         icon: Banknote,
+      },
+            {
+        path: "/metricas",
+        label: "Métricas",
+        icon: ChartColumn,
       },
     ]
   : []),
@@ -590,7 +610,16 @@ function Application() {
                     element={<MyPets key={user.id} />}
                   />
                 )}
-
+                                {!isAdmin && (
+                  <Route
+                    path="/asistente"
+                    element={
+                      <BookingAssistant
+                        key={`booking-assistant-${user.id}`}
+                      />
+                    }
+                  />
+                )}
                 <Route
                   path="/servicios"
                   element={
@@ -614,6 +643,12 @@ function Application() {
   <Route
     path="/ventas"
     element={<Sales key={`sales-${user.id}`} />}
+  />
+)}
+{isAdmin && (
+  <Route
+    path="/metricas"
+    element={<Metrics key={`metrics-${user.id}`} />}
   />
 )}
               {isAdmin && (

@@ -60,3 +60,98 @@
     color: var(--color-ink);
   }
 }
+/* Ficha de seguimiento: oculta durante la navegación normal. */
+.tracking-print-sheet {
+  display: none;
+}
+
+@media print {
+  /* Solo se aplica cuando se pulsa "Imprimir ficha". */
+  body.printing-tracking > :not(.tracking-print-sheet) {
+    display: none !important;
+  }
+
+  body.printing-tracking {
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+
+  body.printing-tracking > .tracking-print-sheet {
+    display: block !important;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 160mm;
+    margin: 0 auto;
+    padding: 8mm;
+    border: 1px solid #cccccc;
+    background: #ffffff;
+    color: #111111;
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.45;
+    text-align: center;
+    overflow-wrap: anywhere;
+    break-inside: avoid;
+  }
+
+  .tracking-print-header img {
+    display: block;
+    width: 22mm;
+    height: 22mm;
+    margin: 0 auto 3mm;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .tracking-print-header h1 {
+    margin: 0;
+    color: #98146b;
+    font-size: 23pt;
+    font-weight: 700;
+  }
+
+  .tracking-print-header p {
+    margin: 2mm 0 0;
+  }
+
+  .tracking-print-details {
+    margin-top: 5mm;
+    padding-top: 4mm;
+    border-top: 1px solid #cccccc;
+  }
+
+  .tracking-print-details h2 {
+    margin: 0;
+    font-size: 19pt;
+    font-weight: 700;
+  }
+
+  .tracking-print-sheet p {
+    margin: 2mm 0;
+  }
+
+  .tracking-print-qr {
+    display: flex;
+    justify-content: center;
+    margin: 3mm 0;
+  }
+
+  .tracking-print-qr svg {
+    display: block;
+    width: 60mm;
+    height: 60mm;
+    max-width: 100%;
+  }
+
+  .tracking-print-instruction {
+    font-weight: 700;
+  }
+
+  .tracking-print-sheet footer {
+    margin-top: 5mm;
+    padding-top: 3mm;
+    border-top: 1px solid #cccccc;
+    font-size: 9pt;
+  }
+}

@@ -237,6 +237,7 @@ customersRouter.put("/:id", (req, res) => {
         WHERE user_id = ?
       `).run(id);
     }
+    
     db.prepare(`
       UPDATE users
       SET name = ?, phone = ?, email = ?

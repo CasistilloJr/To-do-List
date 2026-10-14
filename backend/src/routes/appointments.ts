@@ -494,6 +494,128 @@ appointmentsRouter.patch("/:id/confirm", (req, res) => {
 
   res.json({ message: "Cita confirmada." });
 });
+// MARCAR INASISTENCIA: SOLO ADMINISTRADOR
+appointmentsRouter.patch("/:id/no-show", (req, res) => {
+  const user = res.locals.user;
+
+  if (user.role !== "ADMIN") {
+    throw new RequestError(
+      403,
+      "Solo el administrador puede registrar una inasistencia."
+    );
+  }
+
+  const parsedId = idSchema.safeParse(req.params.id);
+
+  if (!parsedId.success) {
+    throw new RequestError(400, "Identificador inválido.");
+  }
+
+  db.transaction(() => {
+    const appointment = findAppointment(parsedId.data);
+
+    if (!appointment) {
+      throw new RequestError(404, "Cita no encontrada.");
+    }
+
+    if (appointment.status !== "CONFIRMED") {
+      throw new RequestError(
+        409,
+        "Solo puedes marcar inasistencia en una cita confirmada."
+      );
+    }
+
+    const startsAt = Date.parse(appointment.starts_at);
+
+    if (!Number.isFinite(startsAt) || startsAt >= Date.now()) {
+      throw new RequestError(
+        409,
+        "La hora programada de recepción todavía no ha pasado."
+      );
+    }
+
+    // La mascota no debe haber iniciado su seguimiento.
+    const received = db.prepare(`
+      SELECT id
+      FROM status_events
+      WHERE appointment_id = ?
+      LIMIT 1
+    `).get(appointment.id);
+
+    if (received) {
+      throw new RequestError(
+        409,
+        "Esta mascota ya tiene seguimiento registrado. No puedes marcarla como inasistencia."
+      );
+    }
+
+    // Evita clasificar como inasistencia una cita con venta.
+    const sale = db.prepare(`
+      SELECT id
+      FROM sales
+      WHERE appointment_id = ?
+      LIMIT 1
+    `).get(appointment.id);
+
+    if (sale) {
+      throw new RequestError(
+        409,
+        "Esta cita tiene una venta registrada. Revisa sus datos."
+      );
+    }
+
+    const update = db.prepare(`
+      UPDATE appointments
+      SET status = 'NO_SHOW'
+      WHERE id = ?
+        AND status = 'CONFIRMED'
+        AND NOT EXISTS (
+          SELECT 1
+          FROM status_events
+          WHERE appointment_id = ?
+        )
+        AND NOT EXISTS (
+          SELECT 1
+          FROM sales
+          WHERE appointment_id = ?
+        )
+    `).run(
+      appointment.id,
+      appointment.id,
+      appointment.id
+    );
+
+    if (update.changes !== 1) {
+      throw new RequestError(
+        409,
+        "La cita cambió. Actualiza la lista antes de continuar."
+      );
+    }
+
+    db.prepare(`
+      INSERT INTO audit_logs (
+        actor_id,
+        action,
+        entity_type,
+        entity_id,
+        details
+      )
+      VALUES (?, 'MARK_NO_SHOW', 'appointment', ?, ?)
+    `).run(
+      user.id,
+      appointment.id,
+      JSON.stringify({
+        from: "CONFIRMED",
+        to: "NO_SHOW",
+        starts_at: appointment.starts_at,
+      })
+    );
+  }).immediate();
+
+  res.json({
+    message: "Inasistencia registrada correctamente.",
+  });
+});
 
 // CANCELAR: ADMINISTRADOR O PROPIETARIO
 appointmentsRouter.patch("/:id/cancel", (req, res) => {

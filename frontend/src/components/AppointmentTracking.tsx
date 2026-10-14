@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import TrackingShare from "./TrackingShare";
 type Stage =
   | "RECEIVED"
   | "CUTTING"
@@ -27,6 +27,8 @@ type TrackingData = {
 
 type Props = {
   appointmentId: number;
+  petName: string;
+  startsAt: string;
   isAdmin: boolean;
   onUpdated: () => void;
 };
@@ -116,6 +118,8 @@ async function request<T>(
 
 export default function AppointmentTracking({
   appointmentId,
+  petName,
+  startsAt,
   isAdmin,
   onUpdated,
 }: Props) {
@@ -215,6 +219,13 @@ export default function AppointmentTracking({
 
       {open && (
         <div className="mt-4 space-y-4">
+                {isAdmin && (
+            <TrackingShare
+              appointmentId={appointmentId}
+              petName={petName}
+              startsAt={startsAt}
+            />
+          )}
           {error && (
             <p
               role="alert"
